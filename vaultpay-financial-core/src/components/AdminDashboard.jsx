@@ -59,7 +59,15 @@ function formatCurrency(amount) {
   }).format(amount);
 }
 
-export default function Home() {
+export default function AdminDashboard({ profile }) {
+  const displayName = profile?.name?.trim() || "Admin";
+
+  const initials = displayName
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0].toUpperCase())
+    .join("");
+
   const totalInvoiced = invoices.reduce(
     (total, invoice) => total + invoice.amount,
     0
@@ -135,11 +143,13 @@ export default function Home() {
 
           <div className="flex items-center gap-3">
             <div className="hidden text-right sm:block">
-              <p className="text-sm font-medium">Alex Morgan</p>
-              <p className="text-xs text-zinc-500">Administrator</p>
+              <p className="text-sm font-medium">{displayName}</p>
+              <p className="text-xs text-zinc-500">
+                {profile?.role?.toLowerCase() === "admin" ? "Administrator" : "Client"}
+              </p>
             </div>
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-sm font-semibold text-blue-700">
-              AM
+              {initials}
             </div>
           </div>
         </header>

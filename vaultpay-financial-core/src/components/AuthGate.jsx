@@ -12,6 +12,7 @@ import ClientDashboard from "@/components/ClientDashboard";
 export default function AuthGate() {
   const [user, setUser] = useState(null);
   const [role, setRole] = useState(null);
+  const [profile, setProfile] = useState(null);
   const [checking, setChecking] = useState(true);
   const [error, setError] = useState("");
 
@@ -23,6 +24,7 @@ export default function AuthGate() {
 
       setUser(currentUser);
       setRole(null);
+      setProfile(null);
       setError("");
 
       if (!currentUser) {
@@ -42,10 +44,12 @@ export default function AuthGate() {
         if (!profile.exists()) {
           setError("Your user profile has not been configured.");
         } else {
-          const userRole = profile.data().role?.toLowerCase();
+          const profileData = profile.data();
+          const userRole = profileData.role?.toLowerCase();
 
           if (userRole === "admin" || userRole === "client") {
             setRole(userRole);
+            setProfile(profileData);
           } else {
             setError("Your account does not have a valid role.");
           }
@@ -122,7 +126,11 @@ export default function AuthGate() {
         </button>
       </div>
 
-      {role === "admin" ? <AdminDashboard /> : <ClientDashboard />}
+      {role === "admin" ? (
+        <AdminDashboard profile={profile} />
+      ) : (
+        <ClientDashboard profile={profile} />
+      )}
     </>
   );
 }
