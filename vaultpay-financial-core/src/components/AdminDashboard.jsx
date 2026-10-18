@@ -103,6 +103,80 @@ export default function AdminDashboard({ profile }) {
     fetchInvoices();
   }, []);
 
+  async function handleCreateInvoice(event) {
+    event.preventDefault();
+
+    setInvoiceFormError("");
+    setInvoiceFormSuccess("");
+
+    const amount = Number(invoiceForm.amount);
+
+    if (
+      !invoiceForm.clientId ||
+      !invoiceForm.invoiceNumber.trim() ||
+      !invoiceForm.description.trim() ||
+      !invoiceForm.dueDate ||
+      !Number.isFinite(amount) ||
+      amount <= 0
+    ) {
+      setInvoiceFormError("Please complete all fields with valid values.");
+      return;
+    }
+
+    try {
+      setSubmittingInvoice(true);
+
+      const currentUser = auth.currentUser;
+
+      if (!currentUser) {
+        throw new Error("Please sign in before creating an invoice.");
+      }
+
+      const token = await currentUser.getIdToken();
+
+      const response = await fetch("/api/invoices", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          clientId: invoiceForm.clientId,
+          invoiceNumber: invoiceForm.invoiceNumber.trim(),
+          description: invoiceForm.description.trim(),
+          amount,
+          dueDate: invoiceForm.dueDate,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to create invoice.");
+      }
+
+      setInvoices((currentInvoices) => [
+        data.invoice,
+        ...currentInvoices,
+      ]);
+
+      setInvoiceForm({
+        clientId: "",
+        invoiceNumber: "",
+        description: "",
+        amount: "",
+        dueDate: "",
+      });
+
+      setInvoiceFormSuccess("Invoice created successfully.");
+    } catch (error) {
+      console.error("Failed to create invoice:", error);
+      setInvoiceFormError(error.message || "Unable to create invoice.");
+    } finally {
+      setSubmittingInvoice(false);
+    }
+  }
+
   const displayName = profile?.name?.trim() || "Admin";
 
   const initials = displayName
@@ -220,6 +294,181 @@ export default function AdminDashboard({ profile }) {
               {showInvoiceForm ? "Cancel" : "+ Create invoice"}
             </button>
           </div>
+
+          {showInvoiceForm && (
+            <form
+              onSubmit={handleCreateInvoice}
+              className="mb-8 rounded-xl border border-zinc-200 bg-white p-5 shadow-sm shadow-zinc-200/30 sm:p-6"
+            >
+              <div className="mb-5">
+                <h3 className="font-semibold">Create a new invoice</h3>
+                <p className="mt-1 text-sm text-zinc-500">
+                  Enter the billing details and select the client.
+                </p>
+              </div>
+
+              <div className="grid gap-5 sm:grid-cols-2">
+                <div>
+                  <label
+                    htmlFor="invoice-client"
+                    className="mb-1.5 block text-sm font-medium text-zinc-700"
+                  >
+                    Client
+                  </label>
+                  <select
+                    id="invoice-client"
+                    required
+                    value={invoiceForm.clientId}
+                    onChange={(event) =>
+                      setInvoiceForm((current) => ({
+                        ...current,
+                        clientId: event.target.value,
+                      }))
+                    }
+                    className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                  >
+                    <option value="">Select a client</option>
+                    {clients.map((client) => (
+                      <option key={client.uid} value={client.uid}>
+                        {client.name || client.email} ({client.email})
+                      </option>
+                    ))}
+                  </select>
+                  {clients.length === 0 && (
+                    <p className="mt-1.5 text-xs text-zinc-500">
+                      No clients are available to select.
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="invoice-number"
+                    className="mb-1.5 block text-sm font-medium text-zinc-700"
+                  >
+                    Invoice number
+                  </label>
+                  <input
+                    id="invoice-number"
+                    required
+                    value={invoiceForm.invoiceNumber}
+                    onChange={(event) =>
+                      setInvoiceForm((current) => ({
+                        ...current,
+                        invoiceNumber: event.target.value,
+                      }))
+                    }
+                    placeholder="INV-2026-005"
+                    className="w-full rounded-lg border border-zinc-300 px-3 py-2.5 text-sm outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                  />
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label
+                    htmlFor="invoice-description"
+                    className="mb-1.5 block text-sm font-medium text-zinc-700"
+                  >
+                    Description
+                  </label>
+                  <input
+                    id="invoice-description"
+                    required
+                    value={invoiceForm.description}
+                    onChange={(event) =>
+                      setInvoiceForm((current) => ({
+                        ...current,
+                        description: event.target.value,
+                      }))
+                    }
+                    placeholder="Consulting services"
+                    className="w-full rounded-lg border border-zinc-300 px-3 py-2.5 text-sm outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                  />
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="invoice-amount"
+                    className="mb-1.5 block text-sm font-medium text-zinc-700"
+                  >
+                    Amount (USD)
+                  </label>
+                  <input
+                    id="invoice-amount"
+                    type="number"
+                    min="0.01"
+                    step="0.01"
+                    required
+                    value={invoiceForm.amount}
+                    onChange={(event) =>
+                      setInvoiceForm((current) => ({
+                        ...current,
+                        amount: event.target.value,
+                      }))
+                    }
+                    placeholder="2500.00"
+                    className="w-full rounded-lg border border-zinc-300 px-3 py-2.5 text-sm outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                  />
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="invoice-due-date"
+                    className="mb-1.5 block text-sm font-medium text-zinc-700"
+                  >
+                    Due date
+                  </label>
+                  <input
+                    id="invoice-due-date"
+                    type="date"
+                    required
+                    value={invoiceForm.dueDate}
+                    onChange={(event) =>
+                      setInvoiceForm((current) => ({
+                        ...current,
+                        dueDate: event.target.value,
+                      }))
+                    }
+                    className="w-full rounded-lg border border-zinc-300 px-3 py-2.5 text-sm outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                  />
+                </div>
+              </div>
+
+              {invoiceFormError && (
+                <p role="alert" className="mt-4 text-sm text-red-600">
+                  {invoiceFormError}
+                </p>
+              )}
+
+              {invoiceFormSuccess && (
+                <p role="status" className="mt-4 text-sm text-emerald-700">
+                  {invoiceFormSuccess}
+                </p>
+              )}
+
+              <div className="mt-6 flex justify-end gap-3">
+                <button
+                  type="button"
+                  disabled={submittingInvoice}
+                  onClick={() => {
+                    setShowInvoiceForm(false);
+                    setInvoiceFormError("");
+                    setInvoiceFormSuccess("");
+                  }}
+                  className="rounded-lg border border-zinc-300 px-4 py-2.5 text-sm font-medium hover:bg-zinc-50 disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="submit"
+                  disabled={submittingInvoice || clients.length === 0}
+                  className="rounded-lg bg-blue-700 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {submittingInvoice ? "Creating..." : "Create invoice"}
+                </button>
+              </div>
+            </form>
+          )}
 
           <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <MetricCard

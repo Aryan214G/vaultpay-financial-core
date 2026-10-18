@@ -38,3 +38,5 @@
 78. use the admin-only clients api in AdminDashboard to map invoice clientIds to client names. keep email or uid as fallback and preserve the current table styling.
 
 80. add state for the create invoice form, its submission status and feedback messages. make the existing create invoice button toggle between opening the form and cancel, without changing the current invoice fetching logic.
+
+81. add the create invoice form to AdminDashboard and submit it to the existing POST invoices api with the firebase token. let admins select a client, enter invoice number, description, amount and due date. show loading and error/success feedback and add the new invoice to the table after creation.
