@@ -18,3 +18,7 @@
 47. AuthGate already fetches the users firestore doc but only saves the role. Can we keep the profile data too and pass it into the admin dashboard so the name, initials and role label come from the actual profile instead of placeholders?
 
 54. create a separate firebase-admin module for server routes using service account credentials from env vars. keep the private key server-only and dont change the existing client firebase.js
+
+55. add a reusable require-auth helper that verifies the bearer firebase token on the server and gets the role from the users document. return 401 for bad tokens and 403 for missing or invalid profiles
+
+56. add a GET /api/auth/me route using require-auth so we can test the server authentication before building invoice endpoints. only return the verified uid, email and role, not the whole profile
