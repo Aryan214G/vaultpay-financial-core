@@ -35,6 +35,19 @@ export default function AdminDashboard({ profile }) {
   const [loadingInvoices, setLoadingInvoices] = useState(true);
   const [invoiceError, setInvoiceError] = useState("");
 
+  const [showInvoiceForm, setShowInvoiceForm] = useState(false);
+  const [submittingInvoice, setSubmittingInvoice] = useState(false);
+  const [invoiceFormError, setInvoiceFormError] = useState("");
+  const [invoiceFormSuccess, setInvoiceFormSuccess] = useState("");
+
+  const [invoiceForm, setInvoiceForm] = useState({
+    clientId: "",
+    invoiceNumber: "",
+    description: "",
+    amount: "",
+    dueDate: "",
+  });
+
   useEffect(() => {
     async function fetchInvoices() {
       try {
@@ -197,9 +210,14 @@ export default function AdminDashboard({ profile }) {
 
             <button
               type="button"
+              onClick={() => {
+                setShowInvoiceForm((visible) => !visible);
+                setInvoiceFormError("");
+                setInvoiceFormSuccess("");
+              }}
               className="rounded-lg bg-blue-700 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-blue-800"
             >
-              + Create invoice
+              {showInvoiceForm ? "Cancel" : "+ Create invoice"}
             </button>
           </div>
 

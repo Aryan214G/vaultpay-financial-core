@@ -42,3 +42,5 @@
 77. connect AdminDashboard to the existing invoices api using the firebase id token. replace the sample invoices with fetched data and add loading, error and empty states. keep the existing layout and calculate the metrics from the real invoices.
 
 78. use the admin-only clients api in AdminDashboard to map invoice clientIds to client names. keep email or uid as fallback and preserve the current table styling.
+
+80. add state for the create invoice form, its submission status and feedback messages. make the existing create invoice button toggle between opening the form and cancel, without changing the current invoice fetching logic.
