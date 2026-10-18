@@ -28,3 +28,5 @@
 70. add a POST endpoint for invoice creation that only admins can use. validate the fields, make sure the selected user is a client, and set the invoice status to Pending on the server. keep the GET endpoint working too.
 
 71. test invoice creation with the admin account using the protected POST endpoint. check the response and verify the invoice is saved in firestore before moving on to the client permission test.
+
+74. test the clients api with both admin and client accounts. admin should get the client list with uid, name and email, while a client should get 403. dont change the dashboard yet.

@@ -130,6 +130,26 @@ export default function AuthGate() {
     console.log("Create invoice response:", await response.json());
   }
 
+  async function testClientsApi() {
+    const currentUser = auth.currentUser;
+
+    if (!currentUser) {
+      console.error("No signed-in user.");
+      return;
+    }
+
+    const token = await currentUser.getIdToken();
+
+    const response = await fetch("/api/clients", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    console.log("Clients API status:", response.status);
+    console.log("Clients API response:", await response.json());
+  }
+
   async function handleSignOut() {
     await signOut(auth);
   }
@@ -196,6 +216,13 @@ export default function AuthGate() {
             className="rounded bg-blue-600 px-4 py-2 text-sm text-white"
           >
             Test Create Invoice
+          </button>
+          <button
+            type="button"
+            onClick={testClientsApi}
+            className="rounded bg-emerald-600 px-4 py-2 text-sm text-white"
+          >
+            Test Clients API
           </button>
         </div>
 
