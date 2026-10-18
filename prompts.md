@@ -18,3 +18,5 @@
 56. add a GET /api/auth/me route using require-auth so we can test the server authentication before building invoice endpoints. only return the verified uid, email and role, not the whole profile
 
 59. authform only saves email and role right now. add a full name field for registration and save the trimmed name in the users doc, but keep new accounts locked to the client role. we'll fix the firestore rules before testing signup
+
+66. add a read-only GET /api/invoices route using the existing requireAuth helper. admins can list all invoices, clients can only list invoices where clientId matches their firebase uid. use the firebase admin sdk, return json, handle errors, and don't add invoice creation or payment logic yet.
