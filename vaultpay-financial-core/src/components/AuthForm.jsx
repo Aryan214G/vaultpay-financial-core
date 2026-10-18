@@ -10,6 +10,7 @@ import { auth, db } from "@/lib/firebase";
 
 export default function AuthForm() {
   const [mode, setMode] = useState("login");
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -29,6 +30,7 @@ export default function AuthForm() {
         );
 
         await setDoc(doc(db, "users", credential.user.uid), {
+          name: name.trim(),
           email: credential.user.email,
           role: "client",
           createdAt: new Date().toISOString(),
@@ -69,6 +71,24 @@ export default function AuthForm() {
         </p>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+          {mode === "register" && (
+            <div>
+              <label htmlFor="name" className="mb-2 block text-sm font-medium">
+                Full name
+              </label>
+              <input
+                id="name"
+                type="text"
+                autoComplete="name"
+                required
+                value={name}
+                onChange={(event) => setName(event.target.value)}
+                className="w-full rounded-lg border border-zinc-300 px-3 py-2.5 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                placeholder="Your full name"
+              />
+            </div>
+          )}
+
           <div>
             <label htmlFor="email" className="mb-2 block text-sm font-medium">
               Email address
