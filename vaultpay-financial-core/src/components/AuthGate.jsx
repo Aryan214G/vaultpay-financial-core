@@ -101,6 +101,35 @@ export default function AuthGate() {
     }
   }
 
+  async function testCreateInvoiceApi() {
+    const currentUser = auth.currentUser;
+
+    if (!currentUser) {
+      console.error("No signed-in user.");
+      return;
+    }
+
+    const token = await currentUser.getIdToken();
+
+    const response = await fetch("/api/invoices", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        clientId: "2lQckPYAcffcHi011RPllfEn1kk2",
+        invoiceNumber: "TEST-001",
+        description: "Test invoice",
+        amount: 100,
+        dueDate: "2026-11-30",
+      }),
+    });
+
+    console.log("Create invoice status:", response.status);
+    console.log("Create invoice response:", await response.json());
+  }
+
   async function handleSignOut() {
     await signOut(auth);
   }
@@ -153,13 +182,20 @@ export default function AuthGate() {
       </div>
 
       <div>
-        <div className="border-b border-amber-300 bg-amber-50 p-3 text-center">
+        <div className="flex items-center justify-center gap-3 border-b border-amber-300 bg-amber-50 p-3 text-center">
           <button
             type="button"
             onClick={testInvoiceApi}
             className="rounded bg-amber-600 px-4 py-2 text-sm text-white"
           >
             Test Invoice API
+          </button>
+          <button
+            type="button"
+            onClick={testCreateInvoiceApi}
+            className="rounded bg-blue-600 px-4 py-2 text-sm text-white"
+          >
+            Test Create Invoice
           </button>
         </div>
 
