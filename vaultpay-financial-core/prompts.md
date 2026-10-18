@@ -31,4 +31,6 @@
 
 69. debug the firebase admin "Failed to parse private key" error. inspect the env key format without printing secrets, verify newline handling and required markers, and fix the configuration without exposing credentials or changing invoice api behavior.
 
+70. add a POST endpoint for invoice creation that only admins can use. validate the fields, make sure the selected user is a client, and set the invoice status to Pending on the server. keep the GET endpoint working too.
+
 71. test invoice creation with the admin account using the protected POST endpoint. check the response and verify the invoice is saved in firestore before moving on to the client permission test.
