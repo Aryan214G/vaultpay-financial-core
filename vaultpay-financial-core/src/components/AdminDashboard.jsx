@@ -31,6 +31,7 @@ function formatCurrency(amount) {
 
 export default function AdminDashboard({ profile }) {
   const [invoices, setInvoices] = useState([]);
+  const [clients, setClients] = useState([]);
   const [loadingInvoices, setLoadingInvoices] = useState(true);
   const [invoiceError, setInvoiceError] = useState("");
 
@@ -62,6 +63,22 @@ export default function AdminDashboard({ profile }) {
         }
 
         setInvoices(data.invoices);
+
+        const clientsResponse = await fetch("/api/clients", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const clientsData = await clientsResponse.json();
+
+        if (!clientsResponse.ok) {
+          throw new Error(
+            clientsData.error || "Failed to fetch clients."
+          );
+        }
+
+        setClients(clientsData.clients);
       } catch (error) {
         console.error("Failed to fetch invoices:", error);
         setInvoiceError(error.message || "Unable to load invoices.");
@@ -272,7 +289,9 @@ export default function AdminDashboard({ profile }) {
                           </p>
                         </td>
                         <td className="px-5 py-4 font-medium">
-                          {invoice.clientEmail || invoice.client || invoice.clientId}
+                          {clients.find((client) => client.uid === invoice.clientId)?.name ||
+                            invoice.clientEmail ||
+                            invoice.clientId}
                         </td>
                         <td className="whitespace-nowrap px-5 py-4 font-medium">
                           {formatCurrency(invoice.amount)}
