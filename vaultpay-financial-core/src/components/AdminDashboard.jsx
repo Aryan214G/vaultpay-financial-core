@@ -1,3 +1,8 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { auth } from "@/lib/firebase";
+
 const invoices = [
   {
     id: "INV-2026-001",

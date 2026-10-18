@@ -36,3 +36,5 @@
 71. test invoice creation with the admin account using the protected POST endpoint. check the response and verify the invoice is saved in firestore before moving on to the client permission test.
 
 74. test the clients api with both admin and client accounts. admin should get the client list with uid, name and email, while a client should get 403. dont change the dashboard yet.
+
+76. prepare AdminDashboard to use react state and effects by adding the client directive and importing useEffect, useState and the firebase auth instance. leave the sample invoice data and ui unchanged for now.
