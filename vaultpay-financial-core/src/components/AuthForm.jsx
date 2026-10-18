@@ -5,7 +5,8 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { doc, setDoc } from "firebase/firestore";
+import { auth, db } from "@/lib/firebase";
 
 export default function AuthForm() {
   const [mode, setMode] = useState("login");
@@ -21,7 +22,17 @@ export default function AuthForm() {
 
     try {
       if (mode === "register") {
-        await createUserWithEmailAndPassword(auth, email, password);
+        const credential = await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+
+        await setDoc(doc(db, "users", credential.user.uid), {
+          email: credential.user.email,
+          role: "Client",
+          createdAt: new Date().toISOString(),
+        });
       } else {
         await signInWithEmailAndPassword(auth, email, password);
       }
