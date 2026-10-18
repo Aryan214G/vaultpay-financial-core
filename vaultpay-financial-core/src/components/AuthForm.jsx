@@ -30,7 +30,7 @@ export default function AuthForm() {
 
         await setDoc(doc(db, "users", credential.user.uid), {
           email: credential.user.email,
-          role: "Client",
+          role: "client",
           createdAt: new Date().toISOString(),
         });
       } else {

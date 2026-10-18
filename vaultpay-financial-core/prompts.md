@@ -10,3 +10,5 @@
 5. can we add a simple login/register screen with firebase email password auth and keep track of whether someone is signed in. dont let registration ask for a role, we'll sort out admin vs client permissions separately
 
 6. lets add firestore user profiles and give new accounts the client role by default. admin access should be provisioned separately and users shouldnt be able to make themselves admins
+
+7. replace the temporary role dropdown with the role from firestore and add a sign out button. if the profile is missing or the role is invalid dont let the user into either dashboard, and make sure firestore rules stop users from changing their own role to admin
