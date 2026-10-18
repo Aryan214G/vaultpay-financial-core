@@ -3,41 +3,6 @@
 import { useEffect, useState } from "react";
 import { auth } from "@/lib/firebase";
 
-const invoices = [
-  {
-    id: "INV-2026-001",
-    client: "Northstar Consulting",
-    description: "Enterprise Strategy Services",
-    amount: 24500,
-    status: "Pending",
-    dueDate: "Oct 25, 2026",
-  },
-  {
-    id: "INV-2026-002",
-    client: "Vertex Solutions",
-    description: "Technical Advisory",
-    amount: 12500,
-    status: "Paid",
-    dueDate: "Oct 12, 2026",
-  },
-  {
-    id: "INV-2026-003",
-    client: "Meridian Group",
-    description: "Infrastructure Assessment",
-    amount: 38000,
-    status: "Pending",
-    dueDate: "Oct 30, 2026",
-  },
-  {
-    id: "INV-2026-004",
-    client: "Apex Industries",
-    description: "Quarterly Consulting Retainer",
-    amount: 18000,
-    status: "Overdue",
-    dueDate: "Oct 10, 2026",
-  },
-];
-
 function StatusBadge({ status }) {
   const styles = {
     Paid: "bg-emerald-50 text-emerald-700 ring-emerald-600/20",
@@ -65,6 +30,49 @@ function formatCurrency(amount) {
 }
 
 export default function AdminDashboard({ profile }) {
+  const [invoices, setInvoices] = useState([]);
+  const [loadingInvoices, setLoadingInvoices] = useState(true);
+  const [invoiceError, setInvoiceError] = useState("");
+
+  useEffect(() => {
+    async function fetchInvoices() {
+      try {
+        setLoadingInvoices(true);
+        setInvoiceError("");
+
+        const currentUser = auth.currentUser;
+
+        if (!currentUser) {
+          setInvoiceError("Please sign in to view invoices.");
+          return;
+        }
+
+        const token = await currentUser.getIdToken();
+
+        const response = await fetch("/api/invoices", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Failed to fetch invoices.");
+        }
+
+        setInvoices(data.invoices);
+      } catch (error) {
+        console.error("Failed to fetch invoices:", error);
+        setInvoiceError(error.message || "Unable to load invoices.");
+      } finally {
+        setLoadingInvoices(false);
+      }
+    }
+
+    fetchInvoices();
+  }, []);
+
   const displayName = profile?.name?.trim() || "Admin";
 
   const initials = displayName
@@ -234,37 +242,57 @@ export default function AdminDashboard({ profile }) {
                 </thead>
 
                 <tbody className="divide-y divide-zinc-100">
-                  {invoices.map((invoice) => (
-                    <tr key={invoice.id} className="hover:bg-zinc-50/70">
-                      <td className="px-5 py-4">
-                        <p className="font-medium text-blue-700">
-                          {invoice.id}
-                        </p>
-                        <p className="mt-1 text-xs text-zinc-500">
-                          {invoice.description}
-                        </p>
-                      </td>
-                      <td className="px-5 py-4 font-medium">
-                        {invoice.client}
-                      </td>
-                      <td className="whitespace-nowrap px-5 py-4 font-medium">
-                        {formatCurrency(invoice.amount)}
-                      </td>
-                      <td className="whitespace-nowrap px-5 py-4 text-zinc-600">
-                        {invoice.dueDate}
-                      </td>
-                      <td className="px-5 py-4">
-                        <StatusBadge status={invoice.status} />
+                  {loadingInvoices ? (
+                    <tr>
+                      <td colSpan={5} className="px-5 py-10 text-center text-zinc-500">
+                        Loading invoices...
                       </td>
                     </tr>
-                  ))}
+                  ) : invoiceError ? (
+                    <tr>
+                      <td colSpan={5} className="px-5 py-10 text-center text-red-600">
+                        {invoiceError}
+                      </td>
+                    </tr>
+                  ) : invoices.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="px-5 py-10 text-center text-zinc-500">
+                        No invoices found.
+                      </td>
+                    </tr>
+                  ) : (
+                    invoices.map((invoice) => (
+                      <tr key={invoice.id} className="hover:bg-zinc-50/70">
+                        <td className="px-5 py-4">
+                          <p className="font-medium text-blue-700">
+                            {invoice.invoiceNumber || invoice.id}
+                          </p>
+                          <p className="mt-1 text-xs text-zinc-500">
+                            {invoice.description}
+                          </p>
+                        </td>
+                        <td className="px-5 py-4 font-medium">
+                          {invoice.clientEmail || invoice.client || invoice.clientId}
+                        </td>
+                        <td className="whitespace-nowrap px-5 py-4 font-medium">
+                          {formatCurrency(invoice.amount)}
+                        </td>
+                        <td className="whitespace-nowrap px-5 py-4 text-zinc-600">
+                          {invoice.dueDate}
+                        </td>
+                        <td className="px-5 py-4">
+                          <StatusBadge status={invoice.status} />
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
           </section>
 
           <p className="mt-5 text-xs text-zinc-400">
-            Prototype preview · Sample data only · No real payments are enabled
+            Live invoice data · Payments are not yet enabled
           </p>
         </div>
       </div>

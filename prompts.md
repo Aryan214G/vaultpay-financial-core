@@ -32,3 +32,5 @@
 74. test the clients api with both admin and client accounts. admin should get the client list with uid, name and email, while a client should get 403. dont change the dashboard yet.
 
 76. prepare AdminDashboard to use react state and effects by adding the client directive and importing useEffect, useState and the firebase auth instance. leave the sample invoice data and ui unchanged for now.
+
+77. connect AdminDashboard to the existing invoices api using the firebase id token. replace the sample invoices with fetched data and add loading, error and empty states. keep the existing layout and calculate the metrics from the real invoices.
