@@ -26,3 +26,7 @@
 59. authform only saves email and role right now. add a full name field for registration and save the trimmed name in the users doc, but keep new accounts locked to the client role. we'll fix the firestore rules before testing signup
 
 66. add a read-only GET /api/invoices route using the existing requireAuth helper. admins can list all invoices, clients can only list invoices where clientId matches their firebase uid. use the firebase admin sdk, return json, handle errors, and don't add invoice creation or payment logic yet.
+
+68. fix the invoices route build error caused by runtime = "nodejs" conflicting with cacheComponents. remove only the unnecessary runtime declaration, keep the auth and client ownership filtering intact, run eslint and retest the api.
+
+69. debug the firebase admin "Failed to parse private key" error. inspect the env key format without printing secrets, verify newline handling and required markers, and fix the configuration without exposing credentials or changing invoice api behavior.

@@ -75,6 +75,32 @@ export default function AuthGate() {
     };
   }, []);
 
+  async function testInvoiceApi() {
+    try {
+      const currentUser = auth.currentUser;
+
+      if (!currentUser) {
+        console.error("No signed-in user found.");
+        return;
+      }
+
+      const token = await currentUser.getIdToken();
+
+      const response = await fetch("/api/invoices", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const result = await response.json();
+
+      console.log("Invoice API status:", response.status);
+      console.log("Invoice API response:", result);
+    } catch (error) {
+      console.error("Invoice API test failed:", error);
+    }
+  }
+
   async function handleSignOut() {
     await signOut(auth);
   }
@@ -126,11 +152,23 @@ export default function AuthGate() {
         </button>
       </div>
 
-      {role === "admin" ? (
-        <AdminDashboard profile={profile} />
-      ) : (
-        <ClientDashboard profile={profile} />
-      )}
+      <div>
+        <div className="border-b border-amber-300 bg-amber-50 p-3 text-center">
+          <button
+            type="button"
+            onClick={testInvoiceApi}
+            className="rounded bg-amber-600 px-4 py-2 text-sm text-white"
+          >
+            Test Invoice API
+          </button>
+        </div>
+
+        {role === "admin" ? (
+          <AdminDashboard profile={profile} />
+        ) : (
+          <ClientDashboard profile={profile} />
+        )}
+      </div>
     </>
   );
 }
