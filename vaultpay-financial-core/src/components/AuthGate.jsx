@@ -50,9 +50,15 @@ export default function AuthGate() {
             setError("Your account does not have a valid role.");
           }
         }
-      } catch {
+      } catch (error) {
+        console.error("Failed to load Firestore user profile:", error);
+
         if (active) {
-          setError("Unable to load your profile. Check your connection and database rules.");
+          setError(
+            error.code
+              ? `Unable to load profile (${error.code}): ${error.message}`
+              : "Unable to load your profile. Check the browser console."
+          );
         }
       } finally {
         if (active) setChecking(false);
