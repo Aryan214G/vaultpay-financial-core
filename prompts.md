@@ -52,3 +52,9 @@
 91. add an authenticated GET endpoint for a single invoice. allow admins to view any invoice and enforce client ownership on the server before returning invoice details.
 
 92. add the signed-in admin email and sign out button to the dedicated admin dashboard route, matching the existing AuthGate header style. keep the dashboard component and authorization checks unchanged.
+
+93. create a dynamic invoice detail page that fetches one invoice through the authenticated API and displays its number, description, amount, due date, status, creation date, and client email. handle loading and authorization errors.
+
+94. fix the invoice detail page prerendering error by wrapping the component that uses useParams in a Suspense boundary. preserve the existing invoice fetching and authorization handling.
+
+95. fix the invoice detail page's authentication timing by waiting for onAuthStateChanged before fetching invoice details. preserve the existing API authorization and error handling.
