@@ -16,7 +16,25 @@ export default function AuthGate() {
   const [checking, setChecking] = useState(true);
   const [error, setError] = useState("");
 
+
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.testInvoice = async (invoiceId) => {
+        if (!auth.currentUser) {
+          console.error("No user signed in.");
+          return;
+        }
+        const token = await auth.currentUser.getIdToken();
+        const res = await fetch(`/api/invoices/${invoiceId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        console.log("HTTP status:", res.status);
+        console.log("Response:", data);
+        return { status: res.status, data };
+      };
+    }
+
     let active = true;
 
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {

@@ -54,3 +54,7 @@
 88. add a dedicated /admin/dashboard route that checks the Firebase session and Firestore role before showing the admin dashboard. show a forbidden message to client accounts and preserve the existing root route.
 
 89. remove the temporary invoice and clients API test functions and buttons from AuthGate. keep sign out, authentication checks, and role-based dashboard rendering unchanged.
+
+91. add an authenticated GET endpoint for a single invoice. allow admins to view any invoice and enforce client ownership on the server before returning invoice details.
+
+92. add the signed-in admin email and sign out button to the dedicated admin dashboard route, matching the existing AuthGate header style. keep the dashboard component and authorization checks unchanged.

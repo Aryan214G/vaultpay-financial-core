@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 
 import { auth, db } from "@/lib/firebase";
@@ -10,16 +10,36 @@ import AdminDashboard from "@/components/AdminDashboard";
 export default function AdminDashboardPage() {
   const [status, setStatus] = useState("checking");
   const [profile, setProfile] = useState(null);
+  const [email, setEmail] = useState("");
 
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.testInvoice = async (invoiceId) => {
+        if (!auth.currentUser) {
+          console.error("No user signed in.");
+          return;
+        }
+        const token = await auth.currentUser.getIdToken();
+        const res = await fetch(`/api/invoices/${invoiceId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        console.log("HTTP status:", res.status);
+        console.log("Response:", data);
+        return { status: res.status, data };
+      };
+    }
+
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setProfile(null);
 
       if (!user) {
+        setEmail("");
         setStatus("unauthenticated");
         return;
       }
 
+      setEmail(user.email || "");
       setStatus("checking");
 
       try {
@@ -49,6 +69,10 @@ export default function AdminDashboardPage() {
 
     return () => unsubscribe();
   }, []);
+
+  async function handleSignOut() {
+    await signOut(auth);
+  }
 
   if (status === "checking") {
     return (
@@ -87,5 +111,23 @@ export default function AdminDashboardPage() {
     );
   }
 
-  return <AdminDashboard profile={profile} />;
+  return (
+    <>
+      <div className="flex items-center justify-between border-b border-zinc-200 bg-white px-6 py-3">
+        <span className="text-sm text-zinc-600">
+          Signed in as {email} · admin
+        </span>
+
+        <button
+          type="button"
+          onClick={handleSignOut}
+          className="rounded-lg border border-zinc-300 px-3 py-2 text-sm hover:bg-zinc-50"
+        >
+          Sign out
+        </button>
+      </div>
+
+      <AdminDashboard profile={profile} />
+    </>
+  );
 }
