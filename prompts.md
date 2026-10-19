@@ -62,3 +62,7 @@
 96. add a View invoice link to each client invoice row that opens its dynamic detail page. preserve the existing payment status and disabled Pay invoice behavior.
 
 99. create a backend invoice PDF download endpoint using PDFKit. require Firebase authentication, enforce client invoice ownership, allow admin access, and return a private PDF attachment with a safe filename.
+
+100. add a Download PDF button to the invoice detail page. fetch the authenticated PDF endpoint, download the returned blob with a filename based on the invoice number, and show loading and error states.
+
+101. fix the PDF route build error by removing the explicit runtime config, since it conflicts with cacheComponents in Next.js 16.

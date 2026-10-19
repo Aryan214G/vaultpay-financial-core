@@ -4,8 +4,6 @@ import PDFDocument from "pdfkit";
 import { adminDb } from "@/lib/firebase-admin";
 import { requireAuth } from "@/lib/require-auth";
 
-export const runtime = "nodejs";
-
 export async function GET(request, { params }) {
   const authResult = await requireAuth(request);
 

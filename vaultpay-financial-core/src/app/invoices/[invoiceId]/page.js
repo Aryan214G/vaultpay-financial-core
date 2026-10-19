@@ -20,6 +20,8 @@ function InvoiceDetailContent() {
   const [invoice, setInvoice] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [downloading, setDownloading] = useState(false);
+  const [downloadError, setDownloadError] = useState("");
 
   useEffect(() => {
     let active = true;
@@ -85,6 +87,52 @@ function InvoiceDetailContent() {
       unsubscribe();
     };
   }, [invoiceId]);
+
+  async function handleDownloadPdf() {
+    try {
+      setDownloading(true);
+      setDownloadError("");
+
+      const user = auth.currentUser;
+
+      if (!user) {
+        throw new Error("Please sign in to download this invoice.");
+      }
+
+      const token = await user.getIdToken();
+
+      const response = await fetch(
+        `/api/invoices/${encodeURIComponent(invoiceId)}/pdf`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Unable to download invoice PDF.");
+      }
+
+      const blob = await response.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+
+      link.href = objectUrl;
+      link.download = `invoice-${invoice.invoiceNumber || invoice.id}.pdf`;
+
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      URL.revokeObjectURL(objectUrl);
+    } catch (error) {
+      setDownloadError(error.message || "Unable to download invoice PDF.");
+    } finally {
+      setDownloading(false);
+    }
+  }
 
   return (
     <main className="min-h-screen bg-[#f6f7f9] px-6 py-8 text-zinc-900 sm:px-8">
@@ -154,6 +202,23 @@ function InvoiceDetailContent() {
                 </dd>
               </div>
             </dl>
+
+            <div className="mt-8 border-t border-zinc-200 pt-6">
+              <button
+                type="button"
+                onClick={handleDownloadPdf}
+                disabled={downloading}
+                className="rounded-lg bg-blue-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {downloading ? "Preparing PDF..." : "Download PDF"}
+              </button>
+
+              {downloadError && (
+                <p className="mt-3 text-sm text-red-600" role="alert">
+                  {downloadError}
+                </p>
+              )}
+            </div>
           </section>
         ) : null}
       </div>
