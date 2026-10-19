@@ -46,3 +46,7 @@
 80. add state for the create invoice form, its submission status and feedback messages. make the existing create invoice button toggle between opening the form and cancel, without changing the current invoice fetching logic.
 
 81. add the create invoice form to AdminDashboard and submit it to the existing POST invoices api with the firebase token. let admins select a client, enter invoice number, description, amount and due date. show loading and error/success feedback and add the new invoice to the table after creation.
+
+83. prepare ClientDashboard for fetching real invoice data by adding the client directive, react state hooks and firebase auth import. remove the hardcoded invoice array but leave the existing layout and formatting alone for now.
+
+84. connect ClientDashboard to the authenticated invoices api and show only the current client's invoices. add loading, error and empty states, display real invoice fields and statuses, and keep the existing layout and pay button disabled for now.
