@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 
-export default function CheckoutPage() {
+function CheckoutContent() {
   const { invoiceId } = useParams();
   const router = useRouter();
 
@@ -170,5 +170,19 @@ export default function CheckoutPage() {
         </button>
       </section>
     </main>
+  );
+}
+
+export default function CheckoutPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="p-8 text-zinc-600">
+          Loading checkout...
+        </main>
+      }
+    >
+      <CheckoutContent />
+    </Suspense>
   );
 }

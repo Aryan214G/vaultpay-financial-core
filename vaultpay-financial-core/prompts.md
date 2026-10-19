@@ -74,3 +74,5 @@
 101. fix the PDF route build error by removing the explicit runtime config, since it conflicts with cacheComponents in Next.js 16.
 
 102. enable the Pay invoice action for pending client invoices and link it to a checkout page, keeping other invoice statuses unchanged.
+
+103. fix the checkout page prerender warning by wrapping the component that uses useParams in Suspense.
