@@ -164,9 +164,11 @@ export default function ClientDashboard() {
                           {invoice.status === "Pending" ? (
                             <button
                               type="button"
-                              disabled
-                              title="Payment will be enabled after Stripe integration"
-                              className="cursor-not-allowed rounded-lg bg-zinc-100 px-3 py-2 text-xs font-medium text-zinc-400"
+                              onClick={() => {
+                                // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+                                window.location.href = `/checkout/${encodeURIComponent(invoice.id)}`;
+                              }}
+                              className="rounded-lg bg-blue-700 px-3 py-2 text-xs font-medium text-white hover:bg-blue-800"
                             >
                               Pay invoice
                             </button>
