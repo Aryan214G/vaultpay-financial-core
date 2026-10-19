@@ -120,7 +120,7 @@ export default function AuthGate() {
           <button
             type="button"
             onClick={handleSignOut}
-            className="mt-6 rounded-lg bg-zinc-900 px-4 py-2 text-sm text-white"
+            className="mt-6 rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800"
           >
             Sign out
           </button>
@@ -138,7 +138,7 @@ export default function AuthGate() {
         <button
           type="button"
           onClick={handleSignOut}
-          className="rounded-lg border border-zinc-300 px-3 py-2 text-sm hover:bg-zinc-50"
+          className="rounded-lg bg-zinc-900 px-3 py-2 text-sm font-medium text-white hover:bg-zinc-800"
         >
           Sign out
         </button>
