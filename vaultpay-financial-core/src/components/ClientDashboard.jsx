@@ -153,22 +153,31 @@ export default function ClientDashboard() {
                         </span>
                       </td>
                       <td className="px-6 py-4">
-                        {invoice.status === "Pending" ? (
-                          <button
-                            type="button"
-                            disabled
-                            title="Payment will be enabled after Stripe integration"
-                            className="cursor-not-allowed rounded-lg bg-zinc-100 px-3 py-2 text-xs font-medium text-zinc-400"
+                        <div className="flex items-center gap-3">
+                          <a
+                            href={`/invoices/${encodeURIComponent(invoice.id)}`}
+                            className="text-xs font-medium text-blue-700 hover:underline"
                           >
-                            Pay invoice
-                          </button>
-                        ) : (
-                          <span className="text-xs text-zinc-500">
-                            {invoice.status === "Paid"
-                              ? "Payment complete"
-                              : "Payment overdue"}
-                          </span>
-                        )}
+                            View invoice
+                          </a>
+
+                          {invoice.status === "Pending" ? (
+                            <button
+                              type="button"
+                              disabled
+                              title="Payment will be enabled after Stripe integration"
+                              className="cursor-not-allowed rounded-lg bg-zinc-100 px-3 py-2 text-xs font-medium text-zinc-400"
+                            >
+                              Pay invoice
+                            </button>
+                          ) : (
+                            <span className="text-xs text-zinc-500">
+                              {invoice.status === "Paid"
+                                ? "Payment complete"
+                                : "Payment overdue"}
+                            </span>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))

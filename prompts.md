@@ -58,3 +58,5 @@
 94. fix the invoice detail page prerendering error by wrapping the component that uses useParams in a Suspense boundary. preserve the existing invoice fetching and authorization handling.
 
 95. fix the invoice detail page's authentication timing by waiting for onAuthStateChanged before fetching invoice details. preserve the existing API authorization and error handling.
+
+96. add a View invoice link to each client invoice row that opens its dynamic detail page. preserve the existing payment status and disabled Pay invoice behavior.
