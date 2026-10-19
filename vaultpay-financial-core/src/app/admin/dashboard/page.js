@@ -1,0 +1,91 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
+
+import { auth, db } from "@/lib/firebase";
+import AdminDashboard from "@/components/AdminDashboard";
+
+export default function AdminDashboardPage() {
+  const [status, setStatus] = useState("checking");
+  const [profile, setProfile] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      setProfile(null);
+
+      if (!user) {
+        setStatus("unauthenticated");
+        return;
+      }
+
+      setStatus("checking");
+
+      try {
+        const profileSnapshot = await getDoc(
+          doc(db, "users", user.uid)
+        );
+
+        if (!profileSnapshot.exists()) {
+          setStatus("forbidden");
+          return;
+        }
+
+        const profileData = profileSnapshot.data();
+
+        if (profileData.role?.toLowerCase() !== "admin") {
+          setStatus("forbidden");
+          return;
+        }
+
+        setProfile(profileData);
+        setStatus("authorized");
+      } catch (error) {
+        console.error("Admin authorization check failed:", error);
+        setStatus("error");
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  if (status === "checking") {
+    return (
+      <main className="flex min-h-screen items-center justify-center">
+        Checking admin access...
+      </main>
+    );
+  }
+
+  if (status === "unauthenticated") {
+    return (
+      <main className="flex min-h-screen items-center justify-center">
+        You must sign in before accessing this page.
+      </main>
+    );
+  }
+
+  if (status === "forbidden") {
+    return (
+      <main className="flex min-h-screen items-center justify-center">
+        <section className="rounded-xl border border-zinc-200 p-8">
+          <h1 className="text-xl font-semibold">403 — Forbidden</h1>
+          <p className="mt-2 text-sm text-zinc-600">
+            You do not have permission to access the admin dashboard.
+          </p>
+        </section>
+      </main>
+    );
+  }
+
+  if (status === "error") {
+    return (
+      <main className="flex min-h-screen items-center justify-center">
+        Unable to verify your admin access. Please try again.
+      </main>
+    );
+  }
+
+  return <AdminDashboard profile={profile} />;
+}

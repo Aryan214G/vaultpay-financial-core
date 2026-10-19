@@ -44,3 +44,5 @@
 83. prepare ClientDashboard for fetching real invoice data by adding the client directive, react state hooks and firebase auth import. remove the hardcoded invoice array but leave the existing layout and formatting alone for now.
 
 84. connect ClientDashboard to the authenticated invoices api and show only the current client's invoices. add loading, error and empty states, display real invoice fields and statuses, and keep the existing layout and pay button disabled for now.
+
+88. add a dedicated /admin/dashboard route that checks the Firebase session and Firestore role before showing the admin dashboard. show a forbidden message to client accounts and preserve the existing root route.
