@@ -275,7 +275,7 @@ export default function AdminDashboard({ profile }) {
           <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
             <div>
               <h2 className="text-2xl font-semibold tracking-tight">
-                Good morning, Alex
+                Good morning, {displayName}
               </h2>
               <p className="mt-2 text-sm text-zinc-500">
                 Here&apos;s what&apos;s happening with your invoices.
