@@ -66,3 +66,5 @@
 95. fix the invoice detail page's authentication timing by waiting for onAuthStateChanged before fetching invoice details. preserve the existing API authorization and error handling.
 
 96. add a View invoice link to each client invoice row that opens its dynamic detail page. preserve the existing payment status and disabled Pay invoice behavior.
+
+99. create a backend invoice PDF download endpoint using PDFKit. require Firebase authentication, enforce client invoice ownership, allow admin access, and return a private PDF attachment with a safe filename.
